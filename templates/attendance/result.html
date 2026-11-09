@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Register{% endblock %}
+{% block heading %}Attendance register{% endblock %}
+{% block content %}
+<div class="toolbar"><p class="muted">{{ exam.exam_name }} · {{ exam.subject_name or 'Multiple subjects' }} · {{ exam.exam_date }} · {{ exam.session }}</p><button class="btn secondary" onclick="window.print()">Print</button></div>
+<form method="post" action="{{ url_for('core.attendance_save',exam_id=exam.id) }}">
+{% for dept,students in groups.items() %}
+<div class="panel print-break"><h3>{{ dept }} <span class="count">{{ students|length }} students</span></h3>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>USN</th><th>Student name</th><th>Subject</th><th>Present</th><th>Absent</th><th>Remarks</th></tr></thead><tbody>
+{% for s in students %}{% set rec=saved.get(s.usn) %}
+<tr><td>{{ loop.index }}</td><td>{{ s.usn }}</td><td>{{ s.student_name }}</td><td>{{ s.subject_name if s.subject_name is defined else exam.subject_name }}</td>
+<td><input type="radio" name="status_{{ s.usn }}" value="Present" {% if rec and rec.status=='Present' %}checked{% endif %}></td>
+<td><input type="radio" name="status_{{ s.usn }}" value="Absent" {% if not rec or rec.status=='Absent' %}checked{% endif %}></td>
+<td><input type="text" name="remarks_{{ s.usn }}" value="{{ rec.remarks if rec else '' }}" maxlength="250" placeholder="Optional"></td></tr>
+{% endfor %}</tbody></table></div></div>
+{% else %}<div class="panel">No students match this examination.</div>{% endfor %}
+<div class="actions"><button class="btn">Save attendance</button></div>
+</form>
+{% endblock %}

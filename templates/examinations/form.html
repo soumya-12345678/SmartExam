@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Create Examination{% endblock %}
+{% block heading %}Create examination{% endblock %}
+{% block content %}
+<div class="panel narrow">
+  <p class="muted">Use this single form for college-wide, combined multi-subject, and department examinations.</p>
+  <form method="post" enctype="multipart/form-data" class="formgrid" id="exam-form">
+    <label class="full">Examination type
+      <select name="exam_type" id="exam-type">
+        <option value="general" {% if selected_exam_type == 'general' %}selected{% endif %}>General College Examination – same subject for all uploaded students</option>
+        <option value="combined" {% if selected_exam_type == 'combined' %}selected{% endif %}>Combined Examination – different subjects by student</option>
+        <option value="department" {% if selected_exam_type == 'department' %}selected{% endif %}>Department Examination – one selected department</option>
+      </select>
+    </label>
+    <label>Examination name<input name="exam_name" placeholder="Internal Assessment 1" required></label>
+    <label>Examination date<input type="date" name="exam_date" required></label>
+    <label>Session<select name="session"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></label>
+    <label class="common-field">Common subject name<input name="subject_name" id="subject-name" placeholder="Subject name"></label>
+    <label class="common-field">Common subject code<input name="subject_code" placeholder="Subject code"></label>
+    <label class="common-field">Semester (optional)<select name="semester"><option value="">Use semester from Excel / all</option>{% for n in range(1,9) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></label>
+    <label class="department-field full" hidden>Department
+      <input name="department" list="department-options" placeholder="Select department">
+      <datalist id="department-options">{% for d in departments %}<option value="{{ d }}">{% endfor %}</datalist>
+    </label>
+    <label class="full" id="mixing-field" hidden>Maximum departments to mix in each classroom
+      <select name="mixing_limit">
+        <option value="1">1 – No department mixing</option>
+        <option value="2" selected>2 – Up to two departments</option>
+        <option value="3">3 – Up to three departments</option>
+        <option value="4">4 – Up to four departments</option>
+        <option value="5">5 – Up to five departments</option>
+        <option value="99">No fixed limit – mix all available departments</option>
+      </select>
+      <small>For each classroom, students from the selected number of departments are arranged alternately wherever possible.</small>
+    </label>
+    <label class="full" id="single-file-field">Students Excel file (.xlsx / .xls)
+      <input type="file" name="file" id="single-file" accept=".xlsx,.xls" required>
+      <small>For General and Department examinations, upload the complete applicable student list in one workbook.</small>
+    </label>
+    <label class="full" id="multi-file-field" hidden>Department Excel files (.xlsx / .xls) – select multiple files
+      <input type="file" name="files" id="multi-files" accept=".xlsx,.xls" multiple>
+      <small>You can select CSE, Civil, ECE, etc. files together. Hold Ctrl while selecting multiple files, or select files one after another using the file picker if your browser supports it. Each file must contain: <b>usn</b>, <b>student_name</b>, <b>department</b>, <b>semester</b>, <b>subject_name</b>. Optional: <b>subject_code</b>. ExamDesk merges all files automatically and rejects duplicate USNs.</small>
+    </label>
+    <div class="hint full" id="excel-help">Required columns: <b>usn</b>, <b>student_name</b>. Optional: department, semester. All uploaded students receive the common subject above.</div>
+    <div class="hint full">Rooms and invigilators are selected automatically from the registered lists. Only the number of classrooms needed for the uploaded students will be used, based on room capacity. One invigilator is assigned to each used classroom.</div>
+    <div class="actions full"><button class="btn">Create examination</button><a class="btn secondary" href="{{ url_for('core.examinations') }}">Cancel</a></div>
+  </form>
+</div>
+<script>
+(function(){
+ const type=document.getElementById('exam-type'), help=document.getElementById('excel-help');
+ const common=document.querySelectorAll('.common-field'), dept=document.querySelector('.department-field'), mix=document.getElementById('mixing-field');
+ const subject=document.getElementById('subject-name');
+ const singleWrap=document.getElementById('single-file-field'), multiWrap=document.getElementById('multi-file-field');
+ const single=document.getElementById('single-file'), multi=document.getElementById('multi-files');
+ function update(){
+   const v=type.value;
+   common.forEach(x=>x.hidden=(v==='combined'));
+   dept.hidden=(v!=='department');
+   mix.hidden=(v!=='combined');
+   subject.required=(v!=='combined');
+   singleWrap.hidden=(v==='combined'); single.required=(v!=='combined');
+   multiWrap.hidden=(v!=='combined'); multi.required=(v==='combined');
+   help.innerHTML=v==='combined'
+    ? 'You may upload separate department files together. Example: CSE.xlsx + Civil.xlsx + ECE.xlsx. The system merges them and alternates departments in classroom seating, subject to your mixing limit.'
+    : 'Required columns: <b>usn</b>, <b>student_name</b>. Optional: <b>department</b>, <b>semester</b>. All uploaded students receive the common subject above.';
+ }
+ type.addEventListener('change',update); update();
+})();
+</script>
+{% endblock %}

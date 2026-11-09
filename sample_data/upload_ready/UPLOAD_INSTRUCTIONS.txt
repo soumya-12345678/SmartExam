@@ -1,0 +1,47 @@
+EXAMDESK UPLOAD-READY SAMPLE FILES
+=================================
+These are clean, single-worksheet .xlsx workbooks with the exact headers used by ExamDesk.
+All sample student/faculty data is fictional.
+
+IMPORT ONCE BEFORE TESTING
+--------------------------
+1. 06_Invigilators_Faculty.xlsx -> Invigilators > Import
+2. 07_Classrooms.xlsx -> Classrooms > Import
+3. 01_Student_Master_Import.xlsx -> Students > Import (optional)
+
+GENERAL COLLEGE EXAMINATION
+---------------------------
+Select General College Examination and upload 02_General_Exam_Students.xlsx.
+Enter one common subject name/code in the form. Every uploaded student gets
+that common subject.
+
+COMBINED EXAMINATION – MULTIPLE FILES
+-------------------------------------
+Select Combined Examination. In the multiple-file chooser, select any two or
+more of the following together (hold Ctrl while clicking):
+  04_CSE_Students_Combined_Upload.xlsx
+  04_Civil_Students_Combined_Upload.xlsx
+  04_ECE_Students_Combined_Upload.xlsx
+  04_EEE_Students_Combined_Upload.xlsx
+  04_Mechanical_Students_Combined_Upload.xlsx
+For a full 80-student test, select all five files. Set the mixing limit to 2.
+Every one of these department files has exactly these columns:
+  usn, student_name, department, semester, subject_code, subject_name
+Do not select the General roster or Student Master file for a Combined exam.
+Alternatively, upload 03_Combined_Exam_Students.xlsx as one combined workbook.
+
+DEPARTMENT EXAMINATION
+----------------------
+Select Department Examination, select CSE, and upload
+05_CSE_Department_Exam_Semester5.xlsx. Enter a common subject name/code.
+
+CLASSROOM TEST DATA
+-------------------
+The sample file contains 8 rooms x 20 seats = 160 seats. The full combined
+roster contains 80 students. For seating, use a date/session that has no
+other exam bookings. Demo faculty count is 15.
+
+IMPORTANT
+---------
+Use these fictional workbooks only for testing. For real exams, replace the
+sample rows with approved college data while preserving the exact headers.

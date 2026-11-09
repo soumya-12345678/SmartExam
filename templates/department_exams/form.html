@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Create Department Examination{% endblock %}
+{% block heading %}Create department-specific examination{% endblock %}
+{% block content %}
+<div class="panel narrow">
+  <p class="muted">
+    Create an examination for one department and upload its student Excel file.
+    ExamDesk will automatically use all registered classrooms and distribute
+    the registered invigilators across those classrooms. You do not need to
+    select rooms or invigilators here.
+  </p>
+
+  <form method="post" enctype="multipart/form-data" class="formgrid">
+    <label class="full">
+      Department
+      <input name="department" list="department-options" placeholder="e.g. CSE" required>
+      <datalist id="department-options">
+        {% for d in departments %}<option value="{{ d }}">{% endfor %}
+      </datalist>
+    </label>
+
+    <label>
+      Examination name
+      <input name="exam_name" placeholder="CSE Departmental Examination" required>
+    </label>
+
+    <label>
+      Examination date
+      <input type="date" name="exam_date" required>
+    </label>
+
+    <label>
+      Session
+      <select name="session">
+        <option value="Morning">Morning</option>
+        <option value="Afternoon">Afternoon</option>
+        <option value="Evening">Evening</option>
+      </select>
+    </label>
+
+    <label>
+      Semester
+      <select name="semester">
+        <option value="">All semesters in uploaded file</option>
+        {% for n in range(1,9) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}
+      </select>
+    </label>
+
+    <label>
+      Subject name
+      <input name="subject_name" placeholder="Machine Learning" required>
+    </label>
+
+    <label>
+      Subject code
+      <input name="subject_code" placeholder="BCS601">
+    </label>
+
+    <label class="full">
+      Students Excel file (.xlsx)
+      <input type="file" name="file" accept=".xlsx,.xls" required>
+      <small>
+        Required columns: <b>usn</b>, <b>student_name</b>.
+        Optional columns: <b>department</b>, <b>semester</b>, <b>section</b>.
+        If department is included, every row must match the selected department.
+        Students from all sections of the selected department can be included
+        in the same file.
+      </small>
+    </label>
+
+    <div class="hint full">
+      <b>Automatic allocation:</b>
+      {% if rooms %}
+        {{ rooms|length }} registered classroom(s), with
+        {{ rooms|sum(attribute='total_seats') }} total seats, will be used.
+      {% else %}
+        No classrooms have been registered yet. Add classrooms in the Classrooms section first.
+      {% endif %}
+      {% if staff %}
+        {{ staff|length }} registered invigilator(s) will be distributed automatically
+        across the classrooms.
+      {% else %}
+        No invigilators have been registered yet. Add/import invigilators in the Invigilators section first.
+      {% endif %}
+      The system checks total seating capacity before creating the examination.
+    </div>
+
+    <div class="actions full">
+      <button class="btn" {% if not rooms or not staff %}disabled{% endif %}>
+        Create and generate seating
+      </button>
+      <a class="btn secondary" href="{{ url_for('core.department_examinations') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
